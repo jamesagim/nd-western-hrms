@@ -5,7 +5,9 @@ import dotenv from "dotenv";
 
 import employeeRoutes from "./routes/employeeRoutes.js";
 import candidateRoutes from "./routes/candidateRoutes.js";
+import passwordRoutes from "./routes/passwordRoutes.js";
 import documentRoutes from "./routes/documentRoutes.js";
+import profileRoutes from "./routes/profileRoutes.js";
 import recruitmentRoutes from "./routes/recruitmentRoutes.js";
 import settingsRoutes from "./routes/settingsRoutes.js";
 import performanceRoutes from "./routes/performanceRoutes.js";
@@ -58,7 +60,10 @@ app.use(
   "/api/documents",
   documentRoutes
 );
-
+app.use(
+  "/api/password",
+  passwordRoutes
+);
 app.use(
   "/api/dashboard",
   dashboardRoutes
@@ -66,6 +71,10 @@ app.use(
 app.use(
   "/api/performance",
   performanceRoutes
+);
+app.use(
+  "/api/profile",
+  profileRoutes
 );
 
 app.use("/api/payroll", payrollRoutes);

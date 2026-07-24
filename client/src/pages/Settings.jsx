@@ -1,175 +1,112 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 import AppLayout from "../components/layout/AppLayout";
 import PageHeader from "../components/ui/PageHeader";
 import Card from "../components/ui/Card";
 
 import SettingsSidebar from "../components/settings/SettingsSidebar";
+
 import CompanySettings from "../components/settings/CompanySettings";
 import ProfileSettings from "../components/settings/ProfileSettings";
 import SecuritySettings from "../components/settings/SecuritySettings";
 import PreferencesSettings from "../components/settings/PreferencesSettings";
 import AppearanceSettings from "../components/settings/AppearanceSettings";
 
-import {
-  getSettings,
-  updateSettings,
-} from "../services/settingsService";
 
-import { toast } from "react-toastify";
+function Settings(){
 
-function Settings() {
-  const [loading, setLoading] =
-    useState(true);
 
-  const [activeTab, setActiveTab] =
-    useState("Company");
+const [activeTab,setActiveTab]=
+useState("Company");
 
-  const [formData, setFormData] =
-    useState({
-      companyName: "",
-      companyEmail: "",
-      companyPhone: "",
-      companyWebsite: "",
-      companyAddress: "",
-      currency: "₦",
-      timezone: "Africa/Lagos",
-      dateFormat: "DD/MM/YYYY",
-      theme: "Light",
-    });
 
-  useEffect(() => {
-    loadSettings();
-  }, []);
 
-  const loadSettings = async () => {
-    try {
-      const res =
-        await getSettings();
+const renderContent = ()=>{
 
-      setFormData(res.data);
 
-      setLoading(false);
-    } catch (error) {
-      console.log(error);
+switch(activeTab){
 
-      setLoading(false);
-    }
-  };
 
-  const handleChange = (e) => {
-    setFormData({
-      ...formData,
+case "Company":
+return <CompanySettings />;
 
-      [e.target.name]:
-        e.target.value,
-    });
-  };
 
-  const handleSubmit = async (
-    e
-  ) => {
-    e.preventDefault();
+case "Profile":
+return <ProfileSettings />;
 
-    try {
-      await updateSettings(
-        formData
-      );
 
-      toast.success(
-        "Settings updated successfully."
-      );
-    } catch (error) {
-      console.log(error);
+case "Security":
+return <SecuritySettings />;
 
-      toast.error(
-        "Failed to update settings."
-      );
-    }
-  };
 
-  if (loading) {
-    return (
-      <AppLayout>
-        <div className="p-10">
-          Loading...
-        </div>
-      </AppLayout>
-    );
-  }
+case "Preferences":
+return <PreferencesSettings />;
 
-  return (
-    <AppLayout>
 
-      <PageHeader
-        title="Settings"
-        subtitle="Manage system settings"
-      />
+case "Appearance":
+return <AppearanceSettings />;
 
-      <div className="flex gap-8 items-start">
 
-        <SettingsSidebar
-          activeTab={activeTab}
-          setActiveTab={setActiveTab}
-        />
+default:
+return <CompanySettings />;
 
-        <Card className="flex-1">
 
-          {activeTab ===
-            "Company" && (
-            <CompanySettings
-              formData={formData}
-              handleChange={
-                handleChange
-              }
-              handleSubmit={
-                handleSubmit
-              }
-            />
-          )}
-
-          {activeTab ===
-            "Profile" && (
-            <ProfileSettings />
-          )}
-
-          {activeTab ===
-            "Security" && (
-            <SecuritySettings />
-          )}
-
-          {activeTab ===
-            "Preferences" && (
-            <PreferencesSettings
-              formData={formData}
-              handleChange={
-                handleChange
-              }
-              handleSubmit={
-                handleSubmit
-              }
-            />
-          )}
-
-          {activeTab ===
-            "Appearance" && (
-            <AppearanceSettings
-              formData={formData}
-              handleChange={
-                handleChange
-              }
-              handleSubmit={
-                handleSubmit
-              }
-            />
-          )}
-
-        </Card>
-
-      </div>
-
-    </AppLayout>
-  );
 }
+
+
+
+};
+
+
+
+return(
+
+<AppLayout>
+
+
+<PageHeader
+
+title="Settings"
+
+subtitle="Manage system settings"
+
+/>
+
+
+
+<div className="flex gap-8 items-start">
+
+
+<SettingsSidebar
+
+activeTab={activeTab}
+
+setActiveTab={setActiveTab}
+
+/>
+
+
+
+<Card className="flex-1">
+
+{renderContent()}
+
+
+</Card>
+
+
+
+</div>
+
+
+
+</AppLayout>
+
+
+);
+
+
+}
+
 
 export default Settings;
