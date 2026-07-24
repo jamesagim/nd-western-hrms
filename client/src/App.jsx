@@ -349,7 +349,34 @@ element={
 }
 />
 
+<Route
+ path="/users"
+ element={
+  <ProtectedRoute>
+    <Users />
+  </ProtectedRoute>
+ }
+/>
 
+
+<Route
+ path="/add-user"
+ element={
+  <ProtectedRoute>
+    <AddUser />
+  </ProtectedRoute>
+ }
+/>
+
+
+<Route
+ path="/edit-user/:id"
+ element={
+  <ProtectedRoute>
+    <EditUser />
+  </ProtectedRoute>
+ }
+/>
 
 
 {/* SETTINGS */}

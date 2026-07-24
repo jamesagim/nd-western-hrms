@@ -7,6 +7,7 @@ import employeeRoutes from "./routes/employeeRoutes.js";
 import candidateRoutes from "./routes/candidateRoutes.js";
 import passwordRoutes from "./routes/passwordRoutes.js";
 import documentRoutes from "./routes/documentRoutes.js";
+import userRoutes from "./routes/userRoutes.js";
 import profileRoutes from "./routes/profileRoutes.js";
 import recruitmentRoutes from "./routes/recruitmentRoutes.js";
 import settingsRoutes from "./routes/settingsRoutes.js";
@@ -81,6 +82,7 @@ app.use("/api/payroll", payrollRoutes);
 
 app.use("/api/candidates", candidateRoutes);
 
+app.use("/api/users", userRoutes);
 // ===========================
 // MongoDB Connection
 // ===========================
