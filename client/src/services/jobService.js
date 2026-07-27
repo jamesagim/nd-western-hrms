@@ -1,16 +1,22 @@
 import axios from "axios";
 
-const API_URL = "http://localhost:5001/api/jobs";
+const API =
+"http://localhost:5001/api/jobs";
 
-const getConfig = () => ({
-  headers: {
-    Authorization: `Bearer ${localStorage.getItem("token")}`,
-  },
+
+const config = () => ({
+ headers:{
+  Authorization:
+  `Bearer ${localStorage.getItem("token")}`
+ }
 });
 
-export const getJobs = () => {
-  return axios.get(API_URL, getConfig());
-};
+
+export const getJobs = () =>
+axios.get(
+ API,
+ config()
+);
 
 export const getJob = (id) => {
   return axios.get(`${API_URL}/${id}`, getConfig());

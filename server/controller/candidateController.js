@@ -172,13 +172,15 @@ export const moveCandidate = async (req, res) => {
 };
 
 // ============================
-// HIRE
+// HIRE CANDIDATE
 // ============================
 
 export const hireCandidate = async (req, res) => {
   try {
-    const candidate =
-      await Candidate.findById(req.params.id);
+
+    const candidate = await Candidate.findById(
+      req.params.id
+    );
 
     if (!candidate) {
       return res.status(404).json({
@@ -186,46 +188,56 @@ export const hireCandidate = async (req, res) => {
       });
     }
 
-    const employee =
-      await Employee.create({
-
-        firstName:
-          candidate.firstName,
-
-        lastName:
-          candidate.lastName,
-
-        name:
-          `${candidate.firstName} ${candidate.lastName}`,
-
-        email:
-          candidate.email,
-
-        phone:
-          candidate.phone,
-
-        department:
-          candidate.department,
-
-        jobTitle:
-          candidate.position,
-
-        image:
-          candidate.photo,
-
-        status:
-          "Active",
+    // Prevent duplicate employee
+    const existingEmployee =
+      await Employee.findOne({
+        email: candidate.email,
       });
 
-    await Candidate.findByIdAndDelete(
-      req.params.id
-    );
+    if (existingEmployee) {
+      return res.status(400).json({
+        message: "This candidate has already been hired.",
+      });
+    }
 
-    res.json({
-      message:
-        "Candidate Hired Successfully",
+    const employee = await Employee.create({
+
+      firstName: candidate.firstName,
+
+      lastName: candidate.lastName,
+
+      name: `${candidate.firstName} ${candidate.lastName}`,
+
+      email: candidate.email,
+
+      phone: candidate.phone,
+
+      department: candidate.department,
+
+      jobTitle: candidate.position,
+
+      education: candidate.education,
+
+      skills: candidate.skills.join(", "),
+
+      image: candidate.photo,
+
+      hireDate: new Date(),
+
+      status: "Active",
+
+    });
+
+    // Mark candidate as hired instead of deleting
+    candidate.stage = "Hired";
+    await candidate.save();
+
+    res.status(201).json({
+
+      message: "Candidate hired successfully.",
 
       employee,
+
     });
 
   } catch (error) {
@@ -233,7 +245,9 @@ export const hireCandidate = async (req, res) => {
     console.error(error);
 
     res.status(500).json({
+
       message: error.message,
+
     });
 
   }

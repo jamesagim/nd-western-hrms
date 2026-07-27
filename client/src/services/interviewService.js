@@ -1,33 +1,54 @@
 import axios from "axios";
 
-const API_URL = "http://localhost:5001/api/interviews";
+const API =
+  "http://localhost:5001/api/interviews";
 
-const getToken = () => {
 
-  return {
-    headers: {
-      Authorization: `Bearer ${localStorage.getItem("token")}`,
-    },
-  };
+const config = () => ({
+  headers: {
+    Authorization:
+      `Bearer ${localStorage.getItem("token")}`,
+  },
+});
 
-};
 
-export const getInterviews = () => {
-  return axios.get(API_URL, getToken());
-};
+// GET ALL INTERVIEWS
+export const getInterviews = () =>
+  axios.get(
+    API,
+    config()
+  );
 
-export const getInterview = (id) => {
-  return axios.get(`${API_URL}/${id}`, getToken());
-};
 
-export const createInterview = (data) => {
-  return axios.post(API_URL, data, getToken());
-};
+// GET ONE
+export const getInterview = (id) =>
+  axios.get(
+    `${API}/${id}`,
+    config()
+  );
 
-export const updateInterview = (id, data) => {
-  return axios.put(`${API_URL}/${id}`, data, getToken());
-};
 
-export const deleteInterview = (id) => {
-  return axios.delete(`${API_URL}/${id}`, getToken());
-};
+// CREATE
+export const createInterview = (data) =>
+  axios.post(
+    API,
+    data,
+    config()
+  );
+
+
+// UPDATE
+export const updateInterview = (id,data) =>
+  axios.put(
+    `${API}/${id}`,
+    data,
+    config()
+  );
+
+
+// DELETE
+export const deleteInterview = (id) =>
+  axios.delete(
+    `${API}/${id}`,
+    config()
+  );

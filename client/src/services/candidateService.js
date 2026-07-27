@@ -1,46 +1,23 @@
 import axios from "axios";
 
-const API_URL = "http://localhost:5001/api/candidates";
+const API = "http://localhost:5001/api/candidates";
 
-const getConfig = () => ({
+const config = () => ({
   headers: {
     Authorization: `Bearer ${localStorage.getItem("token")}`,
   },
 });
 
-export const getCandidates = () => {
-  return axios.get(API_URL, getConfig());
-};
-
-export const getCandidate = (id) => {
-  return axios.get(
-    `${API_URL}/${id}`,
-    getConfig()
+export const getCandidates = () => axios.get(API, config());
+export const getCandidate = (id) => axios.get(`${API}/${id}`, config());
+export const createCandidate = (candidate) =>
+  axios.post(API, candidate, config());
+export const updateCandidate = (id, candidate) =>
+  axios.put(`${API}/${id}`, candidate, config());
+export const deleteCandidate = (id) => axios.delete(`${API}/${id}`, config());
+export const hireCandidate = (id) =>
+  axios.put(
+    `${API}/${id}/hire`,
+    {},
+    config()
   );
-};
-
-export const createCandidate = (candidate) => {
-  return axios.post(
-    API_URL,
-    candidate,
-    getConfig()
-  );
-};
-
-export const updateCandidate = (
-  id,
-  candidate
-) => {
-  return axios.put(
-    `${API_URL}/${id}`,
-    candidate,
-    getConfig()
-  );
-};
-
-export const deleteCandidate = (id) => {
-  return axios.delete(
-    `${API_URL}/${id}`,
-    getConfig()
-  );
-};

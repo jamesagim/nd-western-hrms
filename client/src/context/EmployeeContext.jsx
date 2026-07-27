@@ -1,6 +1,7 @@
-import { createContext, useState, useEffect } from "react";
+import { createContext, useState, useEffect, useContext } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
+import { NotificationContext } from "./NotificationContext";
 
 export const EmployeeContext = createContext();
 
@@ -8,6 +9,7 @@ const API = "http://localhost:5001/api/employees";
 
 function EmployeeProvider({ children }) {
   const [employees, setEmployees] = useState([]);
+  const { addNotification } = useContext(NotificationContext);
 
   const getConfig = () => ({
     headers: {
@@ -72,11 +74,20 @@ function EmployeeProvider({ children }) {
 
       await fetchEmployees();
 
+      const employeeName =
+        res.data.name ||
+        `${res.data.firstName || ""} ${res.data.lastName || ""}`.trim() ||
+        "New employee";
+
+      addNotification(
+        "New Employee",
+        `${employeeName} joined ${res.data.department || "the team"}.`,
+        "success"
+      );
 
       toast.success(
         "Employee added successfully!"
       );
-
 
       return res.data;
 

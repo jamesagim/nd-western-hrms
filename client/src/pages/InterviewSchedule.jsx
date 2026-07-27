@@ -15,17 +15,15 @@ import { toast } from "react-toastify";
 
 function InterviewSchedule() {
 
-  const [interviews, setInterviews] =
-    useState([]);
-
-  const [search, setSearch] =
-    useState("");
+  const [interviews, setInterviews] = useState([]);
+  const [search, setSearch] = useState("");
 
   const admin = JSON.parse(
     localStorage.getItem("admin")
-  );
+  ) || {};
 
-  const role = admin?.role;
+  const role =
+    admin?.role?.toLowerCase();
 
   useEffect(() => {
     fetchInterviews();
@@ -53,6 +51,8 @@ function InterviewSchedule() {
     }
 
   };
+
+
 
   const handleDelete = async (id) => {
 
@@ -86,27 +86,39 @@ function InterviewSchedule() {
 
   };
 
+
+
   const filteredInterviews =
     interviews.filter((item) => {
 
       const candidate =
-        item.candidate?.name
-          ?.toLowerCase() || "";
+
+        `${item.candidate?.firstName || ""}
+         ${item.candidate?.lastName || ""}`
+          .toLowerCase();
 
       const interviewer =
         item.interviewer
           ?.toLowerCase() || "";
 
       return (
+
         candidate.includes(
           search.toLowerCase()
-        ) ||
+        )
+
+        ||
+
         interviewer.includes(
           search.toLowerCase()
         )
+
       );
 
     });
+
+
+
 
   const scheduled =
     interviews.filter(
@@ -126,6 +138,9 @@ function InterviewSchedule() {
         i.status === "Cancelled"
     ).length;
 
+
+
+
   return (
 
     <AppLayout>
@@ -134,6 +149,8 @@ function InterviewSchedule() {
         title="Interview Management"
         subtitle="Schedule and manage interviews"
       />
+
+
 
       <div className="grid md:grid-cols-3 gap-6 mb-8">
 
@@ -149,6 +166,8 @@ function InterviewSchedule() {
 
         </Card>
 
+
+
         <Card className="p-6">
 
           <p className="text-gray-500">
@@ -160,6 +179,8 @@ function InterviewSchedule() {
           </h2>
 
         </Card>
+
+
 
         <Card className="p-6">
 
@@ -175,31 +196,41 @@ function InterviewSchedule() {
 
       </div>
 
+
+
+
       <Card className="p-6 mb-8">
 
-        <div className="flex flex-col md:flex-row gap-4 justify-between">
+        <div className="flex flex-col md:flex-row justify-between gap-4">
 
           <input
+
             type="text"
+
             placeholder="Search interview..."
+
             value={search}
-            onChange={(e) =>
-              setSearch(
-                e.target.value
-              )
+
+            onChange={(e)=>
+              setSearch(e.target.value)
             }
+
             className="border rounded-xl p-3 w-full md:w-96"
+
           />
 
-          {(role === "Admin" ||
-            role === "HR") && (
+
+          {(role === "admin" ||
+            role === "hr") && (
 
             <Link
               to="/add-interview"
             >
 
               <Button>
+
                 Schedule Interview
+
               </Button>
 
             </Link>
@@ -209,6 +240,10 @@ function InterviewSchedule() {
         </div>
 
       </Card>
+
+
+
+
 
       <Card className="overflow-x-auto">
 
@@ -235,6 +270,10 @@ function InterviewSchedule() {
               </th>
 
               <th className="p-4 text-left">
+                Time
+              </th>
+
+              <th className="p-4 text-left">
                 Mode
               </th>
 
@@ -250,95 +289,119 @@ function InterviewSchedule() {
 
           </thead>
 
+
+
+
           <tbody>
 
-            {filteredInterviews.map(
-              (item) => (
+            {filteredInterviews.map((item)=>(
 
-                <tr
-                  key={item._id}
-                  className="border-b hover:bg-gray-50"
-                >
+              <tr
 
-                  <td className="p-4">
-                    {item.candidate?.name}
-                  </td>
+                key={item._id}
 
-                  <td className="p-4">
-                    {item.job?.title}
-                  </td>
+                className="border-b hover:bg-gray-50"
 
-                  <td className="p-4">
-                    {item.interviewer}
-                  </td>
+              >
 
-                  <td className="p-4">
-                    {new Date(
-                      item.interviewDate
-                    ).toLocaleDateString()}
-                  </td>
+                <td className="p-4">
 
-                  <td className="p-4">
-                    {item.mode}
-                  </td>
+                  {item.candidate
+                    ?
+                    `${item.candidate.firstName} ${item.candidate.lastName}`
+                    :
+                    "Unknown"}
 
-                  <td className="p-4">
+                </td>
 
-                    <span
-                      className={`px-3 py-1 rounded-full text-white ${
-                        item.status ===
-                        "Completed"
-                          ? "bg-green-600"
-                          : item.status ===
-                            "Cancelled"
-                          ? "bg-red-600"
-                          : "bg-blue-600"
-                      }`}
+                <td className="p-4">
+
+                  {item.job?.title}
+
+                </td>
+
+                <td className="p-4">
+
+                  {item.interviewer}
+
+                </td>
+
+                <td className="p-4">
+
+                  {new Date(
+                    item.interviewDate
+                  ).toLocaleDateString()}
+
+                </td>
+
+                <td className="p-4">
+
+                  {item.interviewTime}
+
+                </td>
+
+                <td className="p-4">
+
+                  {item.mode}
+
+                </td>
+
+                <td className="p-4">
+
+                  <span
+                    className={`px-3 py-1 rounded-full text-white ${
+                      item.status === "Completed"
+                        ? "bg-green-600"
+                        : item.status === "Cancelled"
+                        ? "bg-red-600"
+                        : "bg-blue-600"
+                    }`}
+                  >
+
+                    {item.status}
+
+                  </span>
+
+                </td>
+
+
+
+
+                <td className="p-4 flex gap-2">
+
+                  <Link
+                    to={`/edit-interview/${item._id}`}
+                  >
+
+                    <Button>
+
+                      Edit
+
+                    </Button>
+
+                  </Link>
+
+
+
+                  {role === "admin" && (
+
+                    <Button
+                      onClick={() =>
+                        handleDelete(item._id)
+                      }
                     >
-                      {item.status}
-                    </span>
 
-                  </td>
+                      Delete
 
-                  <td className="p-4 flex gap-2">
+                    </Button>
 
-                    {(role === "Admin" ||
-                      role === "HR") && (
+                  )}
 
-                      <>
-                        <Link
-                          to={`/edit-interview/${item._id}`}
-                        >
-                          <Button>
-                            Edit
-                          </Button>
-                        </Link>
+                </td>
 
-                        {role ===
-                          "Admin" && (
+              </tr>
 
-                          <Button
-                            onClick={() =>
-                              handleDelete(
-                                item._id
-                              )
-                            }
-                          >
-                            Delete
-                          </Button>
-
-                        )}
-
-                      </>
-
-                    )}
-
-                  </td>
-
-                </tr>
-
-              )
-            )}
+            ))}
 
           </tbody>
 

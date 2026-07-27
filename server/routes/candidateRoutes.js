@@ -1,5 +1,9 @@
 import express from "express";
-import multer from "multer";
+
+import authMiddleware from "../middleware/authMiddleware.js";
+import roleMiddleware from "../middleware/roleMiddleware.js";
+
+import upload from "../middleware/upload.js";
 
 import {
   getCandidates,
@@ -11,48 +15,101 @@ import {
   hireCandidate,
 } from "../controller/candidateController.js";
 
+
 const router = express.Router();
 
-// Store uploads temporarily
-const upload = multer({
-  dest: "uploads/",
-});
 
-// Upload fields
-const uploadFields = upload.fields([
-  {
-    name: "photo",
-    maxCount: 1,
-  },
-  {
-    name: "resume",
-    maxCount: 1,
-  },
-]);
 
-// ==========================
-// Routes
-// ==========================
+// GET ALL CANDIDATES
 
-// Get all candidates
-router.get("/", getCandidates);
+router.get(
+  "/",
+  authMiddleware,
+  getCandidates
+);
 
-// Get one candidate
-router.get("/:id", getCandidate);
 
-// Create candidate
-router.post("/", uploadFields, createCandidate);
 
-// Update candidate
-router.put("/:id", uploadFields, updateCandidate);
+// GET SINGLE CANDIDATE
 
-// Delete candidate
-router.delete("/:id", deleteCandidate);
+router.get(
+  "/:id",
+  authMiddleware,
+  getCandidate
+);
 
-// Move candidate in pipeline
-router.put("/:id/move", moveCandidate);
 
-// Hire candidate
-router.post("/:id/hire", hireCandidate);
+
+
+// CREATE CANDIDATE
+
+router.post(
+  "/",
+  authMiddleware,
+  roleMiddleware("Admin","HR"),
+
+  upload.fields([
+    {
+      name:"photo",
+      maxCount:1,
+    },
+    {
+      name:"resume",
+      maxCount:1,
+    },
+  ]),
+
+  createCandidate
+);
+
+
+
+
+// UPDATE CANDIDATE
+
+router.put(
+  "/:id",
+  authMiddleware,
+  roleMiddleware("Admin","HR"),
+  updateCandidate
+);
+
+
+
+
+// DELETE CANDIDATE
+
+router.delete(
+  "/:id",
+  authMiddleware,
+  roleMiddleware("Admin"),
+  deleteCandidate
+);
+
+
+
+
+// MOVE PIPELINE
+
+router.put(
+  "/:id/move",
+  authMiddleware,
+  roleMiddleware("Admin","HR"),
+  moveCandidate
+);
+
+
+
+
+// HIRE CANDIDATE
+
+router.put(
+  "/:id/hire",
+  authMiddleware,
+  roleMiddleware("Admin","HR"),
+  hireCandidate
+);
+
+
 
 export default router;

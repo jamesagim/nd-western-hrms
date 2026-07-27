@@ -1,43 +1,48 @@
 import Interview from "../models/Interview.js";
 
 
-
-
+// ============================
 // GET ALL INTERVIEWS
+// ============================
 
-export const getInterviews = async(req,res)=>{
+export const getInterviews = async (req, res) => {
 
-try{
+  try {
 
+    const interviews = await Interview.find()
 
-const interviews =
-await Interview.find()
+      .populate(
+        "candidate",
+        "firstName lastName email position department"
+      )
 
-.populate(
-"candidate",
-"name email"
-)
+      .populate(
+        "job",
+        "title department"
+      )
 
-.populate(
-"job",
-"title department"
-)
-
-.sort({
-createdAt:-1
-});
-
-
-res.json(interviews);
+      .sort({
+        createdAt: -1,
+      });
 
 
-}catch(error){
 
-res.status(500).json({
-message:error.message
-});
+    res.json(interviews);
 
-}
+
+
+  } catch (error) {
+
+
+    console.error(error);
+
+
+    res.status(500).json({
+      message: error.message,
+    });
+
+
+  }
 
 };
 
@@ -45,46 +50,74 @@ message:error.message
 
 
 
-
-
+// ============================
 // GET SINGLE INTERVIEW
+// ============================
 
-export const getInterview = async(req,res)=>{
+export const getInterview = async (req, res) => {
 
-try{
-
-
-const interview =
-await Interview.findById(
-req.params.id
-)
-
-.populate("candidate")
-
-.populate("job");
+  try {
 
 
-
-if(!interview){
-
-return res.status(404).json({
-message:"Interview not found"
-});
-
-}
+    const interview =
+      await Interview.findById(
+        req.params.id
+      )
 
 
-res.json(interview);
+      .populate(
+        "candidate",
+        "firstName lastName email phone position department experience education skills"
+      )
+
+
+      .populate(
+        "job",
+        "title department description"
+      );
 
 
 
-}catch(error){
 
-res.status(500).json({
-message:error.message
-});
 
-}
+    if (!interview) {
+
+
+      return res.status(404).json({
+
+        message:
+          "Interview not found",
+
+      });
+
+
+    }
+
+
+
+
+
+    res.json(interview);
+
+
+
+
+
+  } catch (error) {
+
+
+    console.error(error);
+
+
+    res.status(500).json({
+
+      message:
+        error.message,
+
+    });
+
+
+  }
 
 };
 
@@ -94,32 +127,65 @@ message:error.message
 
 
 
+
+// ============================
 // CREATE INTERVIEW
+// ============================
 
-export const createInterview = async(req,res)=>{
+export const createInterview = async (req, res) => {
 
-try{
-
-
-const interview =
-await Interview.create(
-req.body
-);
+  try {
 
 
-res.status(201).json(
-interview
-);
+    const interview =
+      await Interview.create(
+        req.body
+      );
 
 
 
-}catch(error){
+    const populatedInterview =
+      await Interview.findById(
+        interview._id
+      )
 
-res.status(400).json({
-message:error.message
-});
+      .populate(
+        "candidate",
+        "firstName lastName email position"
+      )
 
-}
+      .populate(
+        "job",
+        "title department"
+      );
+
+
+
+
+    res.status(201).json(
+      populatedInterview
+    );
+
+
+
+
+
+  } catch (error) {
+
+
+    console.error(error);
+
+
+    res.status(400).json({
+
+      message:
+        error.message,
+
+    });
+
+
+
+  }
 
 };
 
@@ -130,49 +196,85 @@ message:error.message
 
 
 
+
+
+// ============================
 // UPDATE INTERVIEW
+// ============================
 
-export const updateInterview = async(req,res)=>{
+export const updateInterview = async (req, res) => {
 
-try{
-
-
-const interview =
-await Interview.findByIdAndUpdate(
-
-req.params.id,
-
-req.body,
-
-{
-new:true,
-runValidators:true
-}
-
-);
+  try {
 
 
+    const interview =
+      await Interview.findByIdAndUpdate(
 
-if(!interview){
+        req.params.id,
 
-return res.status(404).json({
-message:"Interview not found"
-});
+        req.body,
 
-}
+        {
+          new:true,
+          runValidators:true,
+        }
 
+      )
 
-res.json(interview);
+      .populate(
+        "candidate",
+        "firstName lastName email position"
+      )
+
+      .populate(
+        "job",
+        "title department"
+      );
 
 
 
-}catch(error){
 
-res.status(400).json({
-message:error.message
-});
 
-}
+    if(!interview){
+
+
+      return res.status(404).json({
+
+        message:
+          "Interview not found",
+
+      });
+
+
+    }
+
+
+
+
+    res.json(interview);
+
+
+
+
+
+
+  } catch(error){
+
+
+    console.error(error);
+
+
+
+    res.status(400).json({
+
+      message:
+        error.message,
+
+    });
+
+
+
+  }
 
 };
 
@@ -183,42 +285,69 @@ message:error.message
 
 
 
+
+
+// ============================
 // DELETE INTERVIEW
+// ============================
 
-export const deleteInterview = async(req,res)=>{
-
-try{
-
-
-const interview =
-await Interview.findByIdAndDelete(
-req.params.id
-);
+export const deleteInterview = async (req,res)=>{
 
 
+  try {
 
-if(!interview){
 
-return res.status(404).json({
-message:"Interview not found"
-});
-
-}
+    const interview =
+      await Interview.findByIdAndDelete(
+        req.params.id
+      );
 
 
 
-res.json({
-message:"Interview deleted"
-});
+    if(!interview){
+
+
+      return res.status(404).json({
+
+        message:
+          "Interview not found",
+
+      });
+
+
+    }
 
 
 
-}catch(error){
 
-res.status(500).json({
-message:error.message
-});
 
-}
+    res.json({
+
+      message:
+        "Interview deleted successfully",
+
+    });
+
+
+
+
+
+  } catch(error){
+
+
+    console.error(error);
+
+
+
+    res.status(500).json({
+
+      message:
+        error.message,
+
+    });
+
+
+  }
+
 
 };
