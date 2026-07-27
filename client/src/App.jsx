@@ -11,6 +11,8 @@ import Recruitment from "./pages/Recruitment";
 import AddCandidate from "./pages/AddCandidate";
 import CandidateBoard from "./pages/CandidateBoard";
 import CandidateProfile from "./pages/CandidateProfile";
+import AddInterview from "./pages/AddInterview";
+import EditInterview from "./pages/EditInterview";
 import InterviewSchedule from "./pages/InterviewSchedule";
 
 import LeaveManagement from "./pages/LeaveManagement";
@@ -18,6 +20,10 @@ import RequestLeave from "./pages/RequestLeave";
 import ViewLeave from "./pages/ViewLeave";
 
 import Attendance from "./pages/Attendance";
+
+import Jobs from "./pages/Jobs";
+import AddJob from "./pages/AddJob";
+import EditJob from "./pages/EditJob";
 
 import Payroll from "./pages/Payroll";
 import CreatePayroll from "./pages/CreatePayroll";
@@ -43,358 +49,394 @@ import ProtectedRoute from "./components/ProtectedRoute";
 
 function App() {
 
-return (
+  return (
 
-<Routes>
+    <Routes>
 
 
-{/* LOGIN */}
+      {/* ================= LOGIN ================= */}
 
+      <Route
+        path="/login"
+        element={<Login />}
+      />
+
+
+
+
+
+      {/* ================= DASHBOARD ================= */}
+
+      <Route
+        path="/"
+        element={
+          <ProtectedRoute>
+            <Dashboard />
+          </ProtectedRoute>
+        }
+      />
+
+
+
+
+
+      {/* ================= EMPLOYEES ================= */}
+
+      <Route
+        path="/employees"
+        element={
+          <ProtectedRoute>
+            <Employees />
+          </ProtectedRoute>
+        }
+      />
+
+
+      <Route
+        path="/add-employee"
+        element={
+          <ProtectedRoute>
+            <AddEmployee />
+          </ProtectedRoute>
+        }
+      />
+
+
+      <Route
+        path="/edit-employee/:id"
+        element={
+          <ProtectedRoute>
+            <EditEmployee />
+          </ProtectedRoute>
+        }
+      />
+
+
+      <Route
+        path="/employee/:id"
+        element={
+          <ProtectedRoute>
+            <ViewEmployee />
+          </ProtectedRoute>
+        }
+      />
+
+
+
+
+
+      {/* ================= RECRUITMENT ================= */}
+
+      <Route
+        path="/recruitment"
+        element={
+          <ProtectedRoute>
+            <Recruitment />
+          </ProtectedRoute>
+        }
+      />
+
+
+      <Route
+        path="/recruitment/add"
+        element={
+          <ProtectedRoute>
+            <AddCandidate />
+          </ProtectedRoute>
+        }
+      />
+
+
+      <Route
+        path="/candidate-board"
+        element={
+          <ProtectedRoute>
+            <CandidateBoard />
+          </ProtectedRoute>
+        }
+      />
+
+
+      <Route
+        path="/candidate/:id"
+        element={
+          <ProtectedRoute>
+            <CandidateProfile />
+          </ProtectedRoute>
+        }
+      />
+
+
+      <Route
+        path="/interviews"
+        element={
+          <ProtectedRoute>
+            <InterviewSchedule />
+          </ProtectedRoute>
+        }
+      />
 <Route
-path="/login"
-element={<Login />}
+  path="/add-interview"
+  element={
+    <ProtectedRoute>
+      <AddInterview />
+    </ProtectedRoute>
+  }
 />
 
-
-
-{/* DASHBOARD */}
-
 <Route
-path="/"
-element={
-<ProtectedRoute>
-<Dashboard />
-</ProtectedRoute>
-}
-/>
-
-
-
-{/* EMPLOYEES */}
-
-<Route
-path="/employees"
-element={
-<ProtectedRoute>
-<Employees />
-</ProtectedRoute>
-}
-/>
-
-
-<Route
-path="/add-employee"
-element={
-<ProtectedRoute>
-<AddEmployee />
-</ProtectedRoute>
-}
-/>
-
-
-<Route
-path="/edit-employee/:id"
-element={
-<ProtectedRoute>
-<EditEmployee />
-</ProtectedRoute>
-}
-/>
-
-
-<Route
-path="/employee/:id"
-element={
-<ProtectedRoute>
-<ViewEmployee />
-</ProtectedRoute>
-}
-/>
-
-
-
-
-{/* RECRUITMENT */}
-
-<Route
-path="/recruitment"
-element={
-<ProtectedRoute>
-<Recruitment />
-</ProtectedRoute>
-}
-/>
-
-
-<Route
-path="/recruitment/add"
-element={
-<ProtectedRoute>
-<AddCandidate />
-</ProtectedRoute>
-}
-/>
-
-
-<Route
-path="/candidate-board"
-element={
-<ProtectedRoute>
-<CandidateBoard />
-</ProtectedRoute>
-}
-/>
-
-
-<Route
-path="/candidate/:id"
-element={
-<ProtectedRoute>
-<CandidateProfile />
-</ProtectedRoute>
-}
-/>
-
-
-<Route
-path="/interviews"
-element={
-<ProtectedRoute>
-<InterviewSchedule />
-</ProtectedRoute>
-}
-/>
-
-
-
-
-{/* LEAVE */}
-
-<Route
-path="/leave-management"
-element={
-<ProtectedRoute>
-<LeaveManagement />
-</ProtectedRoute>
-}
-/>
-
-
-<Route
-path="/request-leave"
-element={
-<ProtectedRoute>
-<RequestLeave />
-</ProtectedRoute>
-}
-/>
-
-
-<Route
-path="/leave/:id"
-element={
-<ProtectedRoute>
-<ViewLeave />
-</ProtectedRoute>
-}
+  path="/edit-interview/:id"
+  element={
+    <ProtectedRoute>
+      <EditInterview />
+    </ProtectedRoute>
+  }
 />
 
 
 
 
-{/* ATTENDANCE */}
+      {/* ================= LEAVE ================= */}
 
-<Route
-path="/attendance"
-element={
-<ProtectedRoute>
-<Attendance />
-</ProtectedRoute>
-}
-/>
-
-
+      <Route
+        path="/leave-management"
+        element={
+          <ProtectedRoute>
+            <LeaveManagement />
+          </ProtectedRoute>
+        }
+      />
 
 
-{/* PAYROLL */}
-
-<Route
-path="/payroll"
-element={
-<ProtectedRoute>
-<Payroll />
-</ProtectedRoute>
-}
-/>
+      <Route
+        path="/request-leave"
+        element={
+          <ProtectedRoute>
+            <RequestLeave />
+          </ProtectedRoute>
+        }
+      />
 
 
-<Route
-path="/create-payroll"
-element={
-<ProtectedRoute>
-<CreatePayroll />
-</ProtectedRoute>
-}
-/>
-
-
-<Route
-path="/edit-payroll/:id"
-element={
-<ProtectedRoute>
-<EditPayroll />
-</ProtectedRoute>
-}
-/>
-
-
-<Route
-path="/payroll/:id"
-element={
-<ProtectedRoute>
-<ViewPayroll />
-</ProtectedRoute>
-}
-/>
+      <Route
+        path="/leave/:id"
+        element={
+          <ProtectedRoute>
+            <ViewLeave />
+          </ProtectedRoute>
+        }
+      />
 
 
 
 
-{/* PERFORMANCE */}
 
-<Route
-path="/performance"
-element={
-<ProtectedRoute>
-<Performance />
-</ProtectedRoute>
-}
-/>
+      {/* ================= ATTENDANCE ================= */}
 
-
-
-
-{/* DOCUMENTS */}
-
-<Route
-path="/documents"
-element={
-<ProtectedRoute>
-<Documents />
-</ProtectedRoute>
-}
-/>
-
-
-<Route
-path="/upload-document"
-element={
-<ProtectedRoute>
-<UploadDocument />
-</ProtectedRoute>
-}
-/>
-
-
-<Route
-path="/documents/:id"
-element={
-<ProtectedRoute>
-<ViewDocument />
-</ProtectedRoute>
-}
-/>
-
-
-<Route
-path="/edit-document/:id"
-element={
-<ProtectedRoute>
-<EditDocument />
-</ProtectedRoute>
-}
-/>
+      <Route
+        path="/attendance"
+        element={
+          <ProtectedRoute>
+            <Attendance />
+          </ProtectedRoute>
+        }
+      />
 
 
 
 
-{/* USERS */}
 
-<Route
-path="/users"
-element={
-<ProtectedRoute>
-<Users />
-</ProtectedRoute>
-}
-/>
+      {/* ================= JOBS ================= */}
 
-
-<Route
-path="/add-user"
-element={
-<ProtectedRoute>
-<AddUser />
-</ProtectedRoute>
-}
-/>
+      <Route
+        path="/jobs"
+        element={
+          <ProtectedRoute>
+            <Jobs />
+          </ProtectedRoute>
+        }
+      />
 
 
-<Route
-path="/edit-user/:id"
-element={
-<ProtectedRoute>
-<EditUser />
-</ProtectedRoute>
-}
-/>
-
-<Route
- path="/users"
- element={
-  <ProtectedRoute>
-    <Users />
-  </ProtectedRoute>
- }
-/>
+      <Route
+        path="/add-job"
+        element={
+          <ProtectedRoute>
+            <AddJob />
+          </ProtectedRoute>
+        }
+      />
 
 
-<Route
- path="/add-user"
- element={
-  <ProtectedRoute>
-    <AddUser />
-  </ProtectedRoute>
- }
-/>
-
-
-<Route
- path="/edit-user/:id"
- element={
-  <ProtectedRoute>
-    <EditUser />
-  </ProtectedRoute>
- }
-/>
-
-
-{/* SETTINGS */}
-
-<Route
-path="/settings"
-element={
-<ProtectedRoute>
-<Settings />
-</ProtectedRoute>
-}
-/>
+      <Route
+        path="/edit-job/:id"
+        element={
+          <ProtectedRoute>
+            <EditJob />
+          </ProtectedRoute>
+        }
+      />
 
 
 
-</Routes>
 
-);
+
+      {/* ================= PAYROLL ================= */}
+
+      <Route
+        path="/payroll"
+        element={
+          <ProtectedRoute>
+            <Payroll />
+          </ProtectedRoute>
+        }
+      />
+
+
+      <Route
+        path="/create-payroll"
+        element={
+          <ProtectedRoute>
+            <CreatePayroll />
+          </ProtectedRoute>
+        }
+      />
+
+
+      <Route
+        path="/edit-payroll/:id"
+        element={
+          <ProtectedRoute>
+            <EditPayroll />
+          </ProtectedRoute>
+        }
+      />
+
+
+      <Route
+        path="/payroll/:id"
+        element={
+          <ProtectedRoute>
+            <ViewPayroll />
+          </ProtectedRoute>
+        }
+      />
+
+
+
+
+
+      {/* ================= PERFORMANCE ================= */}
+
+      <Route
+        path="/performance"
+        element={
+          <ProtectedRoute>
+            <Performance />
+          </ProtectedRoute>
+        }
+      />
+
+
+
+
+
+      {/* ================= DOCUMENTS ================= */}
+
+      <Route
+        path="/documents"
+        element={
+          <ProtectedRoute>
+            <Documents />
+          </ProtectedRoute>
+        }
+      />
+
+
+      <Route
+        path="/upload-document"
+        element={
+          <ProtectedRoute>
+            <UploadDocument />
+          </ProtectedRoute>
+        }
+      />
+
+
+      <Route
+        path="/documents/:id"
+        element={
+          <ProtectedRoute>
+            <ViewDocument />
+          </ProtectedRoute>
+        }
+      />
+
+
+      <Route
+        path="/edit-document/:id"
+        element={
+          <ProtectedRoute>
+            <EditDocument />
+          </ProtectedRoute>
+        }
+      />
+
+
+
+
+
+      {/* ================= USERS ================= */}
+
+      <Route
+        path="/users"
+        element={
+          <ProtectedRoute>
+            <Users />
+          </ProtectedRoute>
+        }
+      />
+
+
+      <Route
+        path="/add-user"
+        element={
+          <ProtectedRoute>
+            <AddUser />
+          </ProtectedRoute>
+        }
+      />
+
+
+      <Route
+        path="/edit-user/:id"
+        element={
+          <ProtectedRoute>
+            <EditUser />
+          </ProtectedRoute>
+        }
+      />
+
+
+
+
+
+      {/* ================= SETTINGS ================= */}
+
+      <Route
+        path="/settings"
+        element={
+          <ProtectedRoute>
+            <Settings />
+          </ProtectedRoute>
+        }
+      />
+
+
+
+    </Routes>
+
+  );
 
 }
 
