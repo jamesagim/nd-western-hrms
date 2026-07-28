@@ -1,9 +1,8 @@
 import axios from "axios";
 
-const API =
-  "http://localhost:5001/api/payroll";
+const API = "http://localhost:5001/api/payroll";
 
-const config = () => ({
+const getConfig = () => ({
   headers: {
     Authorization: `Bearer ${localStorage.getItem("token")}`,
   },
@@ -13,42 +12,42 @@ const config = () => ({
 // GET ALL PAYROLL
 // ==========================
 export const getPayroll = () => {
-  return axios.get(API, config());
+  return axios.get(API, getConfig());
+};
+
+// ==========================
+// GET SINGLE PAYROLL
+// ==========================
+export const getSinglePayroll = (id) => {
+  return axios.get(`${API}/${id}`, getConfig());
 };
 
 // ==========================
 // CREATE PAYROLL
 // ==========================
 export const createPayroll = (data) => {
-  return axios.post(
-    API,
-    data,
-    config()
-  );
+  return axios.post(API, data, getConfig());
 };
 
 // ==========================
 // UPDATE PAYROLL
 // ==========================
-export const updatePayroll = (
-  id,
-  data
-) => {
+export const updatePayroll = (id, data) => {
   return axios.put(
     `${API}/${id}`,
     data,
-    config()
+    getConfig()
   );
 };
 
 // ==========================
-// MARK AS PAID
+// MARK PAYROLL AS PAID
 // ==========================
 export const markPayrollPaid = (id) => {
   return axios.put(
     `${API}/paid/${id}`,
     {},
-    config()
+    getConfig()
   );
 };
 
@@ -58,6 +57,6 @@ export const markPayrollPaid = (id) => {
 export const deletePayroll = (id) => {
   return axios.delete(
     `${API}/${id}`,
-    config()
+    getConfig()
   );
 };

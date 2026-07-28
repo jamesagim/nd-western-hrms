@@ -21,7 +21,10 @@ const authMiddleware = async (req, res, next) => {
       process.env.JWT_SECRET
     );
 
-    const admin = await Admin.findById(decoded.id).select("-password");
+    const userId = decoded.id || decoded._id;
+
+    const admin = await Admin.findById(userId)
+      .select("-password");
 
     if (!admin) {
       return res.status(401).json({
@@ -32,7 +35,10 @@ const authMiddleware = async (req, res, next) => {
     req.user = admin;
 
     next();
+
   } catch (error) {
+    console.error(error);
+
     return res.status(401).json({
       message: "Invalid token",
     });

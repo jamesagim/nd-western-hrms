@@ -6,19 +6,25 @@ import Attendance from "../models/Attendance.js";
 // =====================================
 
 export const getAttendance = async (req, res) => {
+
   try {
 
-    const attendance = await Attendance.find()
-      .populate(
-        "employee",
-        "name email department"
-      )
-      .sort({
-        date: -1,
-      });
+    const attendance =
+      await Attendance.find()
+
+        .populate(
+          "employee",
+          "name email department"
+        )
+
+        .sort({
+          date: -1
+        });
+
 
 
     res.json(attendance);
+
 
 
   } catch (error) {
@@ -26,11 +32,15 @@ export const getAttendance = async (req, res) => {
     console.error(error);
 
     res.status(500).json({
-      message: error.message,
+      message: error.message
     });
 
   }
+
 };
+
+
+
 
 
 
@@ -46,24 +56,30 @@ export const getSingleAttendance = async (
 
   try {
 
+
     const attendance =
       await Attendance.findById(
         req.params.id
       )
+
       .populate(
         "employee",
         "name email department"
       );
 
 
+
     if (!attendance) {
 
       return res.status(404).json({
+
         message:
-          "Attendance record not found",
+          "Attendance record not found"
+
       });
 
     }
+
 
 
     res.json(attendance);
@@ -74,13 +90,21 @@ export const getSingleAttendance = async (
 
     console.error(error);
 
+
     res.status(500).json({
-      message: error.message,
+
+      message:error.message
+
     });
+
 
   }
 
 };
+
+
+
+
 
 
 
@@ -94,7 +118,9 @@ export const createAttendance = async (
   res
 ) => {
 
+
   try {
+
 
     const attendance =
       await Attendance.create({
@@ -112,28 +138,37 @@ export const createAttendance = async (
           req.body.checkIn,
 
         checkOut:
-          req.body.checkOut,
+          req.body.checkOut
 
       });
 
 
-    res.status(201).json(
-      attendance
-    );
+
+    res.status(201).json(attendance);
 
 
-  } catch (error) {
+
+  } catch(error) {
+
 
     console.error(error);
 
 
     res.status(400).json({
-      message:error.message,
+
+      message:error.message
+
     });
+
 
   }
 
 };
+
+
+
+
+
 
 
 
@@ -147,6 +182,7 @@ export const updateAttendance = async (
   res
 ) => {
 
+
   try {
 
 
@@ -158,20 +194,24 @@ export const updateAttendance = async (
         req.body,
 
         {
-          new: true,
-          runValidators: true,
+          new:true,
+          runValidators:true
         }
 
       );
 
 
 
-    if (!attendance) {
+    if(!attendance){
+
 
       return res.status(404).json({
+
         message:
-          "Attendance record not found",
+        "Attendance record not found"
+
       });
+
 
     }
 
@@ -181,18 +221,25 @@ export const updateAttendance = async (
 
 
 
-  } catch(error) {
-
-    console.error(error);
+  }catch(error){
 
 
     res.status(400).json({
-      message:error.message,
+
+      message:error.message
+
     });
+
 
   }
 
+
 };
+
+
+
+
+
 
 
 
@@ -206,6 +253,7 @@ export const deleteAttendance = async (
   res
 ) => {
 
+
   try {
 
 
@@ -216,12 +264,16 @@ export const deleteAttendance = async (
 
 
 
-    if (!attendance) {
+    if(!attendance){
+
 
       return res.status(404).json({
+
         message:
-          "Attendance record not found",
+        "Attendance record not found"
+
       });
+
 
     }
 
@@ -230,45 +282,168 @@ export const deleteAttendance = async (
     res.json({
 
       message:
-        "Attendance deleted successfully",
+      "Attendance deleted successfully"
 
     });
 
 
 
-  } catch(error) {
-
-    console.error(error);
+  }catch(error){
 
 
     res.status(500).json({
-      message:error.message,
+
+      message:error.message
+
     });
+
 
   }
 
+
 };
+
+
+
+
+
+
+
+
+
 // =====================================
 // CLOCK IN
 // =====================================
 
-export const clockIn = async(req,res)=>{
+export const clockIn = async (
+  req,
+  res
+) => {
 
-  try{
+
+  try {
+
+
+    const now =
+      new Date();
+
+
+
+
+    // Check if employee already clocked in today
+
+    const startOfDay =
+      new Date();
+
+
+    startOfDay.setHours(
+      0,
+      0,
+      0,
+      0
+    );
+
+
+
+    const endOfDay =
+      new Date();
+
+
+    endOfDay.setHours(
+      23,
+      59,
+      59,
+      999
+    );
+
+
+
+
+    const existingAttendance =
+      await Attendance.findOne({
+
+        employee:req.body.employee,
+
+        date:{
+          $gte:startOfDay,
+          $lte:endOfDay
+        }
+
+      });
+
+
+
+
+    if(existingAttendance){
+
+
+      return res.status(400).json({
+
+        message:
+        "Employee already clocked in today"
+
+      });
+
+
+    }
+
+
+
+
+
+
+
+    // Work starts at 9:00 AM
+
+    const workStart =
+      new Date();
+
+
+    workStart.setHours(
+      9,
+      0,
+      0,
+      0
+    );
+
+
+
+
+    let status =
+      "Present";
+
+
+
+    if(now > workStart){
+
+      status =
+      "Late";
+
+    }
+
+
+
+
+
 
 
     const attendance =
-    await Attendance.create({
+      await Attendance.create({
 
-      employee:req.body.employee,
+        employee:
+        req.body.employee,
 
-      date:new Date(),
+        date:
+        now,
 
-      checkIn:new Date(),
+        checkIn:
+        now,
 
-      status:"Present"
+        status
 
-    });
+      });
+
+
 
 
 
@@ -278,13 +453,21 @@ export const clockIn = async(req,res)=>{
 
   }catch(error){
 
+
     res.status(400).json({
+
       message:error.message
+
     });
+
 
   }
 
+
 };
+
+
+
 
 
 
@@ -295,24 +478,35 @@ export const clockIn = async(req,res)=>{
 // CLOCK OUT
 // =====================================
 
-export const clockOut = async(req,res)=>{
+export const clockOut = async (
+  req,
+  res
+) => {
 
-  try{
+
+  try {
 
 
     const attendance =
-    await Attendance.findById(
-      req.params.id
-    );
+      await Attendance.findById(
+        req.params.id
+      );
+
 
 
     if(!attendance){
 
+
       return res.status(404).json({
-        message:"Attendance not found"
+
+        message:
+        "Attendance not found"
+
       });
 
+
     }
+
 
 
 
@@ -321,25 +515,44 @@ export const clockOut = async(req,res)=>{
 
 
 
+
+
+
+
     if(
       attendance.checkIn &&
       attendance.checkOut
     ){
 
-      const hours =
+
+
+      const hoursWorked =
+
       (
         attendance.checkOut -
         attendance.checkIn
       )
+
       /
-      (1000*60*60);
+
+      (1000 * 60 * 60);
+
+
 
 
 
       attendance.hoursWorked =
-      Number(hours.toFixed(2));
+        Number(
+          hoursWorked.toFixed(2)
+        );
+
+
 
     }
+
+
+
+
 
 
 
@@ -347,16 +560,25 @@ export const clockOut = async(req,res)=>{
 
 
 
+
+
     res.json(attendance);
+
+
 
 
 
   }catch(error){
 
+
     res.status(400).json({
+
       message:error.message
+
     });
 
+
   }
+
 
 };

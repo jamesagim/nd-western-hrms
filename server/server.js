@@ -3,6 +3,7 @@ import mongoose from "mongoose";
 import cors from "cors";
 import dotenv from "dotenv";
 
+
 import employeeRoutes from "./routes/employeeRoutes.js";
 import candidateRoutes from "./routes/candidateRoutes.js";
 import passwordRoutes from "./routes/passwordRoutes.js";
@@ -19,75 +20,214 @@ import payrollRoutes from "./routes/payrollRoutes.js";
 import jobRoutes from "./routes/jobRoutes.js";
 import interviewRoutes from "./routes/interviewRoutes.js";
 
+
+// USERS
+import userRoutes from "./routes/userRoutes.js";
+
+
+
 dotenv.config();
 
+
+
 const app = express();
+
+
 
 // ===========================
 // Middleware
 // ===========================
 
-app.use(cors());
-app.use(express.json());
+app.use(
+  cors()
+);
+
+
+app.use(
+  express.json()
+);
+
+
+
+
 
 // ===========================
 // Test Route
 // ===========================
 
-app.get("/", (req, res) => {
-  res.send("Employee Management API is running...");
-});
+app.get(
+  "/",
+  (req,res)=>{
+
+    res.send(
+      "Employee Management API is running..."
+    );
+
+  }
+);
+
+
+
+
 
 // ===========================
 // API Routes
 // ===========================
 
-app.use("/api/settings", settingsRoutes);
 
-app.use("/api/auth", authRoutes);
+app.use(
+  "/api/settings",
+  settingsRoutes
+);
 
-app.use("/api/employees", employeeRoutes);
 
-app.use("/api/leaves", leaveRoutes);
+app.use(
+  "/api/auth",
+  authRoutes
+);
 
-app.use("/api/attendance", attendanceRoutes);
 
-app.use("/api/recruitment", recruitmentRoutes);
+app.use(
+  "/api/employees",
+  employeeRoutes
+);
 
-app.use("/api/jobs", jobRoutes);
 
-app.use("/api/interviews", interviewRoutes);
+app.use(
+  "/api/leaves",
+  leaveRoutes
+);
 
-app.use("/api/documents", documentRoutes);
 
-app.use("/api/password", passwordRoutes);
+app.use(
+  "/api/attendance",
+  attendanceRoutes
+);
 
-app.use("/api/dashboard", dashboardRoutes);
 
-app.use("/api/performance", performanceRoutes);
+app.use(
+  "/api/recruitment",
+  recruitmentRoutes
+);
 
-app.use("/api/profile", profileRoutes);
 
-app.use("/api/payroll", payrollRoutes);
+app.use(
+  "/api/jobs",
+  jobRoutes
+);
 
-app.use("/api/candidates", candidateRoutes);
+
+app.use(
+  "/api/interviews",
+  interviewRoutes
+);
+
+
+app.use(
+  "/api/documents",
+  documentRoutes
+);
+
+
+app.use(
+  "/api/password",
+  passwordRoutes
+);
+
+
+app.use(
+  "/api/dashboard",
+  dashboardRoutes
+);
+
+
+app.use(
+  "/api/performance",
+  performanceRoutes
+);
+
+
+app.use(
+  "/api/profile",
+  profileRoutes
+);
+
+
+app.use(
+  "/api/payroll",
+  payrollRoutes
+);
+
+
+app.use(
+  "/api/candidates",
+  candidateRoutes
+);
+
+
+
+// USERS ROUTE
+
+app.use(
+  "/api/users",
+  userRoutes
+);
+
+
+
+
 
 // ===========================
 // MongoDB Connection
 // ===========================
 
 mongoose
-  .connect(process.env.MONGO_URI)
-  .then(() => {
-    console.log("✅ MongoDB Connected");
+.connect(
+  process.env.MONGO_URI
+)
 
-    const PORT = process.env.PORT || 5001;
+.then(()=>{
 
-    app.listen(PORT, () => {
-      console.log(`🚀 Server running on port ${PORT}`);
-    });
-  })
-  .catch((err) => {
-    console.log("❌ MongoDB Connection Error");
-    console.log(err);
-  });
+
+console.log(
+"✅ MongoDB Connected"
+);
+
+
+
+const PORT =
+process.env.PORT || 5001;
+
+
+
+app.listen(
+PORT,
+()=>{
+
+
+console.log(
+`🚀 Server running on port ${PORT}`
+);
+
+
+}
+
+);
+
+
+
+})
+
+
+.catch((err)=>{
+
+
+console.log(
+"❌ MongoDB Connection Error"
+);
+
+
+console.log(err);
+
+
+});

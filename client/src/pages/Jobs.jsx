@@ -12,30 +12,42 @@ import {
 
 import { toast } from "react-toastify";
 
+import {
+  Eye,
+  Edit,
+  Trash2,
+} from "lucide-react";
+
+
 
 function Jobs() {
 
 
-  const [jobs, setJobs] =
-    useState([]);
+  const [jobs,setJobs] =
+  useState([]);
 
 
 
-  useEffect(() => {
+
+  useEffect(()=>{
 
     fetchJobs();
 
-  }, []);
+  },[]);
+
+
 
 
 
 
   const fetchJobs = async()=>{
 
+
     try{
 
+
       const res =
-        await getJobs();
+      await getJobs();
 
 
       setJobs(
@@ -43,17 +55,24 @@ function Jobs() {
       );
 
 
+
     }catch(error){
 
+
       console.log(error);
+
 
       toast.error(
         "Failed loading jobs"
       );
 
+
     }
 
+
   };
+
+
 
 
 
@@ -64,13 +83,14 @@ function Jobs() {
 
 
     const confirm =
-      window.confirm(
-        "Delete this job?"
-      );
+    window.confirm(
+      "Delete this job?"
+    );
 
 
     if(!confirm)
       return;
+
 
 
 
@@ -91,11 +111,14 @@ function Jobs() {
 
     }catch(error){
 
+
       console.log(error);
+
 
       toast.error(
         "Delete failed"
       );
+
 
     }
 
@@ -107,9 +130,12 @@ function Jobs() {
 
 
 
+
+
   return (
 
     <AppLayout>
+
 
 
       <PageHeader
@@ -119,6 +145,9 @@ function Jobs() {
         subtitle="Create and manage company job openings"
 
       />
+
+
+
 
 
 
@@ -139,6 +168,8 @@ function Jobs() {
 
 
       </div>
+
+
 
 
 
@@ -195,6 +226,9 @@ function Jobs() {
 
 
 
+
+
+
           <tbody>
 
 
@@ -211,27 +245,45 @@ function Jobs() {
               >
 
 
-                <td className="p-4">
+
+                <td className="p-4 font-medium">
+
                   {job.title}
+
                 </td>
 
 
 
+
+
                 <td className="p-4">
+
                   {job.department}
+
                 </td>
 
 
 
+
+
                 <td className="p-4">
+
                   {job.location}
+
                 </td>
+
+
 
 
 
                 <td className="p-4">
+
                   {job.employmentType}
+
                 </td>
+
+
+
 
 
 
@@ -251,39 +303,78 @@ function Jobs() {
 
 
 
-                <td className="p-4 flex gap-2">
 
 
-                  <Link
+                <td className="p-4">
 
-                    to={`/edit-job/${job._id}`}
 
-                    className="bg-blue-600 text-white px-3 py-1 rounded"
-
-                  >
-
-                    Edit
-
-                  </Link>
+                  <div className="flex gap-2">
 
 
 
+                    <Link
 
-                  <button
+                      to={`/job/${job._id}`}
 
-                    onClick={()=>handleDelete(job._id)}
+                      className="bg-blue-600 text-white p-2 rounded"
 
-                    className="bg-red-600 text-white px-3 py-1 rounded"
+                      title="View"
 
-                  >
+                    >
 
-                    Delete
+                      <Eye size={16}/>
 
-                  </button>
+                    </Link>
 
+
+
+
+
+
+                    <Link
+
+                      to={`/edit-job/${job._id}`}
+
+                      className="bg-yellow-500 text-white p-2 rounded"
+
+                      title="Edit"
+
+                    >
+
+                      <Edit size={16}/>
+
+                    </Link>
+
+
+
+
+
+
+                    <button
+
+                      onClick={()=>
+                        handleDelete(job._id)
+                      }
+
+                      className="bg-red-600 text-white p-2 rounded"
+
+                      title="Delete"
+
+                    >
+
+                      <Trash2 size={16}/>
+
+                    </button>
+
+
+
+                  </div>
 
 
                 </td>
+
+
+
 
 
               </tr>
@@ -303,8 +394,10 @@ function Jobs() {
 
 
 
+
+
         {
-          jobs.length === 0 && (
+          jobs.length===0 && (
 
             <div className="p-8 text-center">
 
@@ -317,7 +410,10 @@ function Jobs() {
 
 
 
+
+
       </Card>
+
 
 
 
@@ -325,7 +421,9 @@ function Jobs() {
 
   );
 
+
 }
+
 
 
 export default Jobs;

@@ -12,215 +12,211 @@ import { toast } from "react-toastify";
 import AppLayout from "../components/layout/AppLayout";
 import PageHeader from "../components/ui/PageHeader";
 import Card from "../components/ui/Card";
-import Button from "../components/ui/Button";
 
+import {
+  Clock,
+  Trash2,
+} from "lucide-react";
 
 
-function Attendance(){
 
+function Attendance() {
 
-const [attendance,setAttendance] =
-useState([]);
 
-const [search,setSearch] =
-useState("");
+  const [attendance, setAttendance] = useState([]);
 
+  const [search, setSearch] = useState("");
 
 
-const admin =
-JSON.parse(
-localStorage.getItem("admin")
-);
 
+  const admin =
+    JSON.parse(
+      localStorage.getItem("admin")
+    );
 
-const role =
-admin?.role;
 
+  const role =
+    admin?.role;
 
 
 
 
-useEffect(()=>{
 
-fetchAttendance();
+  useEffect(() => {
 
-},[]);
+    fetchAttendance();
 
+  }, []);
 
 
 
 
-const fetchAttendance = async()=>{
 
-try{
 
-const res =
-await getAttendance();
 
+  const fetchAttendance = async () => {
 
-setAttendance(
-res.data || []
-);
+    try {
 
+      const res =
+        await getAttendance();
 
-}catch(error){
 
-console.log(error);
+      setAttendance(
+        res.data || []
+      );
 
-}
 
-};
+    } catch(error) {
 
+      console.log(error);
 
+      toast.error(
+        "Failed to load attendance"
+      );
 
+    }
 
+  };
 
 
 
-const handleClockIn = async(employee)=>{
 
 
-try{
 
 
-await clockIn({
 
-employee:
-employee._id
+  const handleClockIn = async(employeeId)=>{
 
-});
 
+    try {
 
-toast.success(
-"Clock In Successful"
-);
 
+      await clockIn({
 
-fetchAttendance();
+        employee: employeeId
 
+      });
 
 
-}catch(error){
 
-toast.error(
-"Clock In Failed"
-);
+      toast.success(
+        "Clock In Successful"
+      );
 
-}
 
 
+      fetchAttendance();
 
-};
 
 
+    } catch(error){
 
 
+      console.log(error);
 
 
+      toast.error(
+        "Clock In Failed"
+      );
 
 
-const handleClockOut = async(id)=>{
+    }
 
 
-try{
+  };
 
 
-await clockOut(id);
 
 
-toast.success(
-"Clock Out Successful"
-);
 
 
-fetchAttendance();
 
 
-}catch(error){
+  const handleClockOut = async(id)=>{
 
-toast.error(
-"Clock Out Failed"
-);
 
+    try{
 
-}
 
+      await clockOut(id);
 
-};
 
 
+      toast.success(
+        "Clock Out Successful"
+      );
 
 
 
+      fetchAttendance();
 
 
 
+    }catch(error){
 
-const handleDelete = async(id)=>{
 
+      toast.error(
+        "Clock Out Failed"
+      );
 
-const confirm =
-window.confirm(
-"Delete attendance record?"
-);
 
+    }
 
-if(!confirm)
-return;
 
+  };
 
 
-try{
 
 
-await deleteAttendance(id);
 
 
-toast.success(
-"Attendance Deleted"
-);
 
 
-fetchAttendance();
+  const handleDelete = async(id)=>{
 
 
+    const confirm =
+      window.confirm(
+        "Delete attendance record?"
+      );
 
-}catch(error){
 
-console.log(error);
 
-}
+    if(!confirm)
+      return;
 
 
 
-};
+    try{
 
 
+      await deleteAttendance(id);
 
 
 
+      toast.success(
+        "Attendance Deleted"
+      );
 
 
 
+      fetchAttendance();
 
 
-const filteredAttendance =
-attendance.filter((item)=>{
 
+    }catch(error){
 
-const name =
-item.employee?.name
-?.toLowerCase()
-||"";
 
+      toast.error(
+        "Delete Failed"
+      );
 
-return name.includes(
-search.toLowerCase()
-);
 
+    }
 
-});
 
+  };
 
 
 
@@ -230,36 +226,68 @@ search.toLowerCase()
 
 
 
-const present =
-attendance.filter(
-(item)=>
-item.status==="Present"
-).length;
+  const filteredAttendance =
 
+    attendance.filter((item)=>{
 
 
-const absent =
-attendance.filter(
-(item)=>
-item.status==="Absent"
-).length;
+      const name =
+        item.employee?.name
+        ?.toLowerCase()
+        || "";
 
 
 
-const late =
-attendance.filter(
-(item)=>
-item.status==="Late"
-).length;
+      return name.includes(
+        search.toLowerCase()
+      );
 
 
+    });
 
 
 
 
 
 
-return(
+
+
+
+  const present =
+
+    attendance.filter(
+      item =>
+      item.status === "Present"
+    ).length;
+
+
+
+  const late =
+
+    attendance.filter(
+      item =>
+      item.status === "Late"
+    ).length;
+
+
+
+  const absent =
+
+    attendance.filter(
+      item =>
+      item.status === "Absent"
+    ).length;
+
+
+
+
+
+
+
+
+
+  return (
+
 
 <AppLayout>
 
@@ -278,7 +306,10 @@ subtitle="Track employee attendance"
 
 
 
+
+
 <div className="grid md:grid-cols-3 gap-6 mb-8">
+
 
 
 <Card className="p-6">
@@ -290,23 +321,6 @@ Present
 <h2 className="text-3xl font-bold text-green-600">
 
 {present}
-
-</h2>
-
-</Card>
-
-
-
-
-<Card className="p-6">
-
-<p className="text-gray-500">
-Absent
-</p>
-
-<h2 className="text-3xl font-bold text-red-600">
-
-{absent}
 
 </h2>
 
@@ -331,9 +345,26 @@ Late
 </Card>
 
 
+
+
+
+<Card className="p-6">
+
+<p className="text-gray-500">
+Absent
+</p>
+
+<h2 className="text-3xl font-bold text-red-600">
+
+{absent}
+
+</h2>
+
+</Card>
+
+
+
 </div>
-
-
 
 
 
@@ -372,10 +403,7 @@ className="w-full border rounded-xl p-3"
 
 
 
-
-
 <Card className="overflow-x-auto">
-
 
 
 <table className="w-full">
@@ -408,6 +436,11 @@ Check Out
 
 
 <th className="p-4 text-left">
+Hours Worked
+</th>
+
+
+<th className="p-4 text-left">
 Status
 </th>
 
@@ -431,10 +464,34 @@ Actions
 <tbody>
 
 
+
 {
 
-filteredAttendance.map(
-(item)=>(
+filteredAttendance.length === 0 ?
+
+
+<tr>
+
+<td
+
+colSpan="7"
+
+className="text-center p-8 text-gray-500"
+
+>
+
+No attendance records found
+
+</td>
+
+</tr>
+
+
+
+:
+
+
+filteredAttendance.map((item)=>(
 
 
 <tr
@@ -446,11 +503,14 @@ className="border-b hover:bg-gray-50"
 >
 
 
-<td className="p-4">
+
+<td className="p-4 font-medium">
 
 {item.employee?.name || "Unknown"}
 
 </td>
+
+
 
 
 
@@ -469,16 +529,23 @@ item.date
 
 
 
+
 <td className="p-4">
 
 {
+
 item.checkIn
+
 ?
+
 new Date(
 item.checkIn
 ).toLocaleTimeString()
+
 :
+
 "--"
+
 }
 
 </td>
@@ -488,19 +555,45 @@ item.checkIn
 
 
 
+
 <td className="p-4">
 
 {
+
 item.checkOut
+
 ?
+
 new Date(
 item.checkOut
 ).toLocaleTimeString()
+
 :
+
 "--"
+
 }
 
 </td>
+
+
+
+
+
+
+
+
+<td className="p-4">
+
+{
+item.hoursWorked || 0
+}
+
+ hrs
+
+</td>
+
+
 
 
 
@@ -511,22 +604,38 @@ item.checkOut
 
 
 <span
-className={`
-px-3 py-1 rounded-full text-white
+
+className={
+
+`
+
+px-3 py-1 rounded-full text-white text-sm
 
 ${
 item.status==="Present"
+
 ?
+
 "bg-green-600"
+
 :
+
 item.status==="Late"
+
 ?
+
 "bg-yellow-600"
+
 :
+
 "bg-red-600"
+
 }
 
-`}
+`
+
+}
+
 >
 
 {item.status}
@@ -543,10 +652,18 @@ item.status==="Late"
 
 
 
-<td className="p-4 flex gap-2">
+
+<td className="p-4">
+
+
+<div className="flex gap-2 flex-wrap">
+
+
+
 
 
 {
+
 !item.checkOut &&
 
 <button
@@ -557,13 +674,18 @@ item._id
 )
 }
 
-className="bg-blue-600 text-white px-3 py-1 rounded"
+className="bg-blue-600 text-white px-3 py-2 rounded-lg flex items-center gap-1"
 
 >
 
+
+<Clock size={16}/>
+
 Clock Out
 
+
 </button>
+
 
 }
 
@@ -572,8 +694,12 @@ Clock Out
 
 
 
+
+
 {
+
 role==="Admin" &&
+
 
 <button
 
@@ -583,16 +709,24 @@ item._id
 )
 }
 
-className="bg-red-600 text-white px-3 py-1 rounded"
+className="bg-red-600 text-white px-3 py-2 rounded-lg flex items-center gap-1"
 
 >
 
+
+<Trash2 size={16}/>
+
 Delete
+
 
 </button>
 
+
 }
 
+
+
+</div>
 
 
 </td>
@@ -601,17 +735,13 @@ Delete
 
 
 
+
 </tr>
 
 
-)
-
-)
-
+))
 
 }
-
-
 
 
 
@@ -622,7 +752,6 @@ Delete
 </table>
 
 
-
 </Card>
 
 
@@ -631,7 +760,8 @@ Delete
 
 </AppLayout>
 
-);
+
+  );
 
 
 }

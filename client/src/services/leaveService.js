@@ -1,112 +1,41 @@
 import axios from "axios";
 
+const API = "http://localhost:5001/api/leaves";
 
-const API =
-"http://localhost:5001/api/leaves";
-
-
-
-const config = () => ({
-
-  headers:{
-
-    Authorization:
-    `Bearer ${localStorage.getItem("token")}`
-
-  }
-
+const getConfig = () => ({
+  headers: {
+    Authorization: `Bearer ${localStorage.getItem("token")}`,
+  },
 });
 
-
-
-
-
-// GET ALL LEAVES
-
-export const getLeaves = ()=>{
-
-return axios.get(
- API,
- config()
-);
-
+// Get all leaves
+export const getLeaves = () => {
+  return axios.get(API, getConfig());
 };
 
-
-
-
-
-// GET ONE LEAVE
-
-export const getLeave = (id)=>{
-
-return axios.get(
-
- `${API}/${id}`,
-
- config()
-
-);
-
+// Get one leave
+export const getLeave = (id) => {
+  return axios.get(`${API}/${id}`, getConfig());
 };
 
-
-
-
-
-// CREATE LEAVE
-
-export const createLeave = (data)=>{
-
-return axios.post(
-
- API,
-
- data,
-
- config()
-
-);
-
+// Create leave request
+export const createLeave = (leave) => {
+  return axios.post(API, leave, getConfig());
 };
 
-
-
-
-
-// UPDATE STATUS
-
-export const updateLeave = (
-id,
-data
-)=>{
-
-return axios.put(
-
- `${API}/${id}/status`,
-
- data,
-
- config()
-
-);
-
+// Approve / Reject leave
+export const updateLeave = (id, leave) => {
+  return axios.put(
+    `${API}/${id}/status`,
+    leave,
+    getConfig()
+  );
 };
 
-
-
-
-
-// DELETE
-
-export const deleteLeave = (id)=>{
-
-return axios.delete(
-
- `${API}/${id}`,
-
- config()
-
-);
-
+// Delete leave
+export const deleteLeave = (id) => {
+  return axios.delete(
+    `${API}/${id}`,
+    getConfig()
+  );
 };

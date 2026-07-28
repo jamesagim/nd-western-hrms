@@ -1,42 +1,109 @@
 import axios from "axios";
 
+
 const API =
 "http://localhost:5001/api/jobs";
 
 
+
 const config = () => ({
- headers:{
-  Authorization:
-  `Bearer ${localStorage.getItem("token")}`
- }
+
+  headers:{
+
+    Authorization:
+    `Bearer ${localStorage.getItem("token")}`
+
+  }
+
 });
 
 
-export const getJobs = () =>
-axios.get(
- API,
- config()
-);
+
+
+
+// GET ALL JOBS
+
+export const getJobs = () => {
+
+  return axios.get(
+    API,
+    config()
+  );
+
+};
+
+
+
+
+
+
+// GET SINGLE JOB
 
 export const getJob = (id) => {
-  return axios.get(`${API_URL}/${id}`, getConfig());
+
+  return axios.get(
+    `${API}/${id}`,
+    config()
+  );
+
 };
+
+
+
+
+
+
+// CREATE JOB
 
 export const createJob = (job) => {
-  return axios.post(API_URL, job, getConfig());
+
+  return axios.post(
+    API,
+    job,
+    config()
+  );
+
 };
 
-export const updateJob = (id, job) => {
+
+
+
+
+
+// UPDATE JOB
+
+export const updateJob = (
+  id,
+  job
+) => {
+
   return axios.put(
-    `${API_URL}/${id}`,
+
+    `${API}/${id}`,
+
     job,
-    getConfig()
+
+    config()
+
   );
+
 };
+
+
+
+
+
+
+// DELETE JOB
 
 export const deleteJob = (id) => {
+
   return axios.delete(
-    `${API_URL}/${id}`,
-    getConfig()
+
+    `${API}/${id}`,
+
+    config()
+
   );
+
 };

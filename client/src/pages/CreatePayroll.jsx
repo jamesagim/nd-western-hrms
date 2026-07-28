@@ -13,7 +13,6 @@ import { toast } from "react-toastify";
 
 function CreatePayroll() {
   const navigate = useNavigate();
-
   const { employees } = useContext(EmployeeContext);
 
   const [formData, setFormData] = useState({
@@ -25,12 +24,15 @@ function CreatePayroll() {
     bonus: "",
     deductions: "",
   });
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
+    const { name, value } = e.target;
+
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
   };
 
   const netSalary = useMemo(() => {
@@ -40,10 +42,11 @@ function CreatePayroll() {
       Number(formData.bonus || 0) -
       Number(formData.deductions || 0)
     );
-  }, [formData]);
+  }, [formData.basicSalary, formData.allowance, formData.bonus, formData.deductions]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsSubmitting(true);
 
     try {
       await createPayroll({
@@ -51,16 +54,14 @@ function CreatePayroll() {
         netSalary,
       });
 
-      toast.success(
-        "Payroll created successfully."
-      );
-
+      toast.success("Payroll created successfully.");
       navigate("/payroll");
     } catch (error) {
       toast.error(
-        error.response?.data?.message ||
-          "Failed to create payroll."
+        error.response?.data?.message || "Failed to create payroll."
       );
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -72,12 +73,7 @@ function CreatePayroll() {
       />
 
       <Card className="max-w-4xl p-8">
-
-        <form
-          onSubmit={handleSubmit}
-          className="space-y-6"
-        >
-
+        <form onSubmit={handleSubmit} className="space-y-6">
           <div>
             <label className="block mb-2 font-semibold">
               Employee
@@ -90,24 +86,17 @@ function CreatePayroll() {
               className="w-full border rounded-xl p-3"
               required
             >
-              <option value="">
-                Select Employee
-              </option>
+              <option value="">Select Employee</option>
 
               {employees.map((employee) => (
-                <option
-                  key={employee._id}
-                  value={employee._id}
-                >
-                  {employee.name} (
-                  {employee.department})
+                <option key={employee._id} value={employee._id}>
+                  {employee.name} ({employee.department})
                 </option>
               ))}
             </select>
           </div>
 
           <div className="grid md:grid-cols-2 gap-5">
-
             <div>
               <label className="block mb-2 font-semibold">
                 Month
@@ -120,9 +109,7 @@ function CreatePayroll() {
                 className="w-full border rounded-xl p-3"
                 required
               >
-                <option value="">
-                  Select Month
-                </option>
+                <option value="">Select Month</option>
 
                 {[
                   "January",
@@ -138,10 +125,7 @@ function CreatePayroll() {
                   "November",
                   "December",
                 ].map((month) => (
-                  <option
-                    key={month}
-                    value={month}
-                  >
+                  <option key={month} value={month}>
                     {month}
                   </option>
                 ))}
@@ -162,11 +146,9 @@ function CreatePayroll() {
                 required
               />
             </div>
-
           </div>
 
           <div className="grid md:grid-cols-2 gap-5">
-
             <div>
               <label className="block mb-2 font-semibold">
                 Basic Salary
@@ -195,11 +177,9 @@ function CreatePayroll() {
                 className="w-full border rounded-xl p-3"
               />
             </div>
-
           </div>
 
           <div className="grid md:grid-cols-2 gap-5">
-
             <div>
               <label className="block mb-2 font-semibold">
                 Bonus
@@ -227,27 +207,20 @@ function CreatePayroll() {
                 className="w-full border rounded-xl p-3"
               />
             </div>
-
           </div>
 
           <div className="bg-slate-100 rounded-xl p-5">
-
-            <h2 className="text-xl font-bold">
-              Net Salary
-            </h2>
+            <h2 className="text-xl font-bold">Net Salary</h2>
 
             <p className="text-3xl font-bold text-green-600 mt-2">
               ₦{netSalary.toLocaleString()}
             </p>
-
           </div>
 
-          <Button type="submit">
-            Create Payroll
+          <Button type="submit" disabled={isSubmitting}>
+            {isSubmitting ? "Creating Payroll..." : "Create Payroll"}
           </Button>
-
         </form>
-
       </Card>
     </AppLayout>
   );

@@ -7,7 +7,7 @@ import Card from "../components/ui/Card";
 import Button from "../components/ui/Button";
 
 import {
-  getPayroll,
+  getSinglePayroll,
   updatePayroll,
 } from "../services/payrollService";
 
@@ -26,43 +26,44 @@ function EditPayroll() {
     bonus: "",
     deductions: "",
   });
+  const [loading, setLoading] = useState(true);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     loadPayroll();
-  }, []);
+  }, [id]);
 
   const loadPayroll = async () => {
     try {
-      const res = await getPayroll();
+      setLoading(true);
+      const res = await getSinglePayroll(id);
 
-      const payroll = res.data.find(
-        (item) => item._id === id
-      );
-
-      if (!payroll) {
+      if (!res.data) {
         toast.error("Payroll not found");
         navigate("/payroll");
         return;
       }
 
       setFormData({
-        month: payroll.month,
-        year: payroll.year,
-        basicSalary: payroll.basicSalary,
-        allowance: payroll.allowance || 0,
-        bonus: payroll.bonus,
-        deductions: payroll.deductions,
+        month: res.data.month,
+        year: res.data.year,
+        basicSalary: res.data.basicSalary,
+        allowance: res.data.allowance || 0,
+        bonus: res.data.bonus,
+        deductions: res.data.deductions,
       });
     } catch (error) {
       console.log(error);
+      toast.error("Failed to load payroll details.");
+    } finally {
+      setLoading(false);
     }
   };
 
   const handleChange = (e) => {
     setFormData({
       ...formData,
-      [e.target.name]:
-        e.target.value,
+      [e.target.name]: e.target.value,
     });
   };
 
@@ -74,6 +75,7 @@ function EditPayroll() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsSubmitting(true);
 
     try {
       await updatePayroll(id, {
@@ -81,38 +83,44 @@ function EditPayroll() {
         netSalary,
       });
 
-      toast.success(
-        "Payroll updated successfully"
-      );
+      toast.success("Payroll updated successfully");
 
       navigate("/payroll");
     } catch (error) {
       toast.error(
-        error.response?.data?.message ||
-          "Update failed"
+        error.response?.data?.message || "Update failed"
       );
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
+  if (loading) {
+    return (
+      <AppLayout>
+        <PageHeader
+          title="Edit Payroll"
+          subtitle="Update payroll information"
+        />
+
+        <Card className="max-w-4xl p-8">
+          <p className="text-slate-500">Loading payroll details...</p>
+        </Card>
+      </AppLayout>
+    );
+  }
+
   return (
     <AppLayout>
-
       <PageHeader
         title="Edit Payroll"
         subtitle="Update payroll information"
       />
 
       <Card className="max-w-4xl p-8">
-
-        <form
-          onSubmit={handleSubmit}
-          className="space-y-6"
-        >
-
+        <form onSubmit={handleSubmit} className="space-y-6">
           <div className="grid md:grid-cols-2 gap-5">
-
             <div>
-
               <label className="block mb-2 font-semibold">
                 Month
               </label>
@@ -124,11 +132,9 @@ function EditPayroll() {
                 onChange={handleChange}
                 className="w-full border rounded-xl p-3"
               />
-
             </div>
 
             <div>
-
               <label className="block mb-2 font-semibold">
                 Year
               </label>
@@ -140,13 +146,10 @@ function EditPayroll() {
                 onChange={handleChange}
                 className="w-full border rounded-xl p-3"
               />
-
             </div>
-
           </div>
 
           <div className="grid md:grid-cols-2 gap-5">
-
             <input
               type="number"
               name="basicSalary"
@@ -164,11 +167,9 @@ function EditPayroll() {
               onChange={handleChange}
               className="border rounded-xl p-3"
             />
-
           </div>
 
           <div className="grid md:grid-cols-2 gap-5">
-
             <input
               type="number"
               name="bonus"
@@ -186,29 +187,21 @@ function EditPayroll() {
               onChange={handleChange}
               className="border rounded-xl p-3"
             />
-
           </div>
 
           <div className="bg-slate-100 rounded-xl p-5">
-
-            <h2 className="font-bold">
-              Net Salary
-            </h2>
+            <h2 className="font-bold">Net Salary</h2>
 
             <p className="text-3xl text-green-600 font-bold">
               ₦{netSalary.toLocaleString()}
             </p>
-
           </div>
 
-          <Button type="submit">
-            Update Payroll
+          <Button type="submit" disabled={isSubmitting}>
+            {isSubmitting ? "Updating Payroll..." : "Update Payroll"}
           </Button>
-
         </form>
-
       </Card>
-
     </AppLayout>
   );
 }

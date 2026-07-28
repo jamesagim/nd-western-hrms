@@ -1,5 +1,5 @@
-import { useEffect, useState, useRef } from "react";
-import { useParams } from "react-router-dom";
+import { useEffect, useRef, useState } from "react";
+import { Link, useParams } from "react-router-dom";
 
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
@@ -9,83 +9,71 @@ import PageHeader from "../components/ui/PageHeader";
 import Card from "../components/ui/Card";
 import Button from "../components/ui/Button";
 
-import { getPayroll } from "../services/payrollService";
+import { getSinglePayroll } from "../services/payrollService";
+
+import { ArrowLeft, Download, Printer } from "lucide-react";
+
+import { toast } from "react-toastify";
 
 function ViewPayroll() {
   const { id } = useParams();
 
   const [payroll, setPayroll] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   const payslipRef = useRef(null);
+  
+useEffect(() => {
+  if (id) {
+    fetchPayroll();
+  }
+}, [id]);
 
-  useEffect(() => {
-    loadPayroll();
-  }, []);
-
-  const loadPayroll = async () => {
+  const fetchPayroll = async () => {
     try {
-      const res = await getPayroll();
-
-      const record = res.data.find(
-        (item) => item._id === id
-      );
-
-      setPayroll(record);
+      setLoading(true);
+      const res = await getSinglePayroll(id);
+      setPayroll(res.data);
     } catch (error) {
       console.log(error);
+      toast.error("Failed loading payroll.");
+    } finally {
+      setLoading(false);
     }
   };
 
   const downloadPDF = async () => {
     try {
-      const input = payslipRef.current;
-
-      if (!input) return;
-
-      const canvas = await html2canvas(input, {
+      const canvas = await html2canvas(payslipRef.current, {
         scale: 2,
         useCORS: true,
       });
 
-      const imgData =
-        canvas.toDataURL("image/png");
+      const img = canvas.toDataURL("image/png");
+      const pdf = new jsPDF("p", "mm", "a4");
+      const pdfWidth = pdf.internal.pageSize.getWidth();
+      const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
 
-      const pdf = new jsPDF(
-        "p",
-        "mm",
-        "a4"
-      );
-
-      const pdfWidth =
-        pdf.internal.pageSize.getWidth();
-
-      const pdfHeight =
-        (canvas.height * pdfWidth) /
-        canvas.width;
-
-      pdf.addImage(
-        imgData,
-        "PNG",
-        0,
-        0,
-        pdfWidth,
-        pdfHeight
-      );
-
-      pdf.save(
-        `${payroll.employee?.name}-${payroll.month}-${payroll.year}-Payslip.pdf`
-      );
+      pdf.addImage(img, "PNG", 0, 0, pdfWidth, pdfHeight);
+      pdf.save(`${payroll.employee?.name}-${payroll.month}-${payroll.year}.pdf`);
     } catch (error) {
       console.log(error);
+      toast.error("Failed downloading PDF.");
     }
   };
+
+  if (loading) {
+    return (
+      <AppLayout>
+        <div className="p-8">Loading payroll...</div>
+      </AppLayout>
+    );
+  }
 
   if (!payroll) {
     return (
       <AppLayout>
-        <div className="p-10 text-center text-xl">
-          Loading Payslip...
-        </div>
+        <div className="p-8">Payroll not found.</div>
       </AppLayout>
     );
   }
@@ -93,239 +81,113 @@ function ViewPayroll() {
   return (
     <AppLayout>
       <PageHeader
-        title="Employee Payslip"
+        title="Payroll Details"
         subtitle={`${payroll.month} ${payroll.year}`}
+        actions={
+          <Link to="/payroll">
+            <Button>
+              <div className="flex items-center gap-2">
+                <ArrowLeft size={18} />
+                Back
+              </div>
+            </Button>
+          </Link>
+        }
       />
 
-      <div ref={payslipRef}>
-        <Card className="max-w-5xl mx-auto p-10 bg-white">
-
-          <div className="flex justify-between items-center border-b pb-6 mb-8">
-
-            <div>
-
-              <h1 className="text-4xl font-bold text-blue-700">
-                ND Western HRMS
-              </h1>
-
-              <p className="text-gray-500 mt-1">
-                Official Employee Payslip
-              </p>
-
-            </div>
-
-            <div className="text-right">
-
-              <h2 className="text-2xl font-bold">
-                PAYSLIP
-              </h2>
-
-              <p>
-                {payroll.month} {payroll.year}
-              </p>
-
-            </div>
-
+      <Card ref={payslipRef} className="max-w-5xl mx-auto p-8">
+        <div className="flex justify-between items-center border-b pb-6">
+          <div>
+            <h2 className="text-3xl font-bold">ND Western HRMS</h2>
+            <p className="text-gray-500">Employee Payslip</p>
           </div>
 
-          <div className="grid grid-cols-2 gap-8 mb-10">
+          <div className="text-right">
+            <h2 className="text-2xl font-bold">PAYSLIP</h2>
+            <p>{payroll.month} {payroll.year}</p>
+          </div>
+        </div>
 
-            <div>
-
-              <h3 className="font-semibold text-gray-600">
-                Employee Name
-              </h3>
-
-              <p className="text-lg">
-                {payroll.employee?.name}
-              </p>
-
-            </div>
-
-            <div>
-
-              <h3 className="font-semibold text-gray-600">
-                Department
-              </h3>
-
-              <p className="text-lg">
-                {payroll.employee?.department}
-              </p>
-
-            </div>
-
-            <div>
-
-              <h3 className="font-semibold text-gray-600">
-                Payroll Period
-              </h3>
-
-              <p>
-                {payroll.month} {payroll.year}
-              </p>
-
-            </div>
-
-            <div>
-
-              <h3 className="font-semibold text-gray-600">
-                Status
-              </h3>
-
-              <span
-                className={`px-3 py-1 rounded-full text-white ${
-                  payroll.status === "Paid"
-                    ? "bg-green-600"
-                    : "bg-yellow-500"
-                }`}
-              >
-                {payroll.status}
-              </span>
-
-            </div>
-
+        <div className="grid md:grid-cols-2 gap-6 mt-8">
+          <div>
+            <p className="text-gray-500">Employee</p>
+            <h3 className="font-bold text-lg">{payroll.employee?.name}</h3>
           </div>
 
-          <table className="w-full border">
-
-            <thead className="bg-slate-900 text-white">
-
-              <tr>
-
-                <th className="p-4 text-left">
-                  Description
-                </th>
-
-                <th className="p-4 text-right">
-                  Amount
-                </th>
-
-              </tr>
-
-            </thead>
-
-            <tbody>
-
-              <tr className="border-b">
-
-                <td className="p-4">
-                  Basic Salary
-                </td>
-
-                <td className="p-4 text-right">
-                  ₦
-                  {Number(
-                    payroll.basicSalary
-                  ).toLocaleString()}
-                </td>
-
-              </tr>
-
-              <tr className="border-b">
-
-                <td className="p-4">
-                  Allowance
-                </td>
-
-                <td className="p-4 text-right">
-                  ₦
-                  {Number(
-                    payroll.allowance || 0
-                  ).toLocaleString()}
-                </td>
-
-              </tr>
-
-              <tr className="border-b">
-
-                <td className="p-4">
-                  Bonus
-                </td>
-
-                <td className="p-4 text-right">
-                  ₦
-                  {Number(
-                    payroll.bonus || 0
-                  ).toLocaleString()}
-                </td>
-
-              </tr>
-
-              <tr className="border-b">
-
-                <td className="p-4 text-red-600">
-                  Deductions
-                </td>
-
-                <td className="p-4 text-right text-red-600">
-                  - ₦
-                  {Number(
-                    payroll.deductions || 0
-                  ).toLocaleString()}
-                </td>
-
-              </tr>
-
-              <tr className="font-bold text-2xl bg-green-50">
-
-                <td className="p-5">
-                  Net Salary
-                </td>
-
-                <td className="p-5 text-right text-green-700">
-                  ₦
-                  {Number(
-                    payroll.netSalary
-                  ).toLocaleString()}
-                </td>
-
-              </tr>
-
-            </tbody>
-
-          </table>
-
-          <div className="mt-16 flex justify-between">
-
-            <div>
-
-              <p className="font-semibold">
-                Employer Signature
-              </p>
-
-              <div className="border-b w-56 mt-10"></div>
-
-            </div>
-
-            <div>
-
-              <p className="font-semibold">
-                Employee Signature
-              </p>
-
-              <div className="border-b w-56 mt-10"></div>
-
-            </div>
-
+          <div>
+            <p className="text-gray-500">Department</p>
+            <h3 className="font-bold text-lg">{payroll.employee?.department}</h3>
           </div>
 
-        </Card>
-      </div>
+          <div>
+            <p className="text-gray-500">Email</p>
+            <h3 className="font-bold text-lg">{payroll.employee?.email}</h3>
+          </div>
 
-      <div className="max-w-5xl mx-auto mt-8 flex gap-4">
+          <div>
+            <p className="text-gray-500">Status</p>
+            <span
+              className={`inline-block mt-2 px-4 py-2 rounded-full text-white ${
+                payroll.status === "Paid" ? "bg-green-600" : "bg-yellow-600"
+              }`}
+            >
+              {payroll.status}
+            </span>
+          </div>
+        </div>
 
+        <table className="w-full mt-10 border">
+          <thead className="bg-slate-900 text-white">
+            <tr>
+              <th className="p-4 text-left">Description</th>
+              <th className="p-4 text-right">Amount</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            <tr className="border-b">
+              <td className="p-4">Basic Salary</td>
+              <td className="p-4 text-right">₦{Number(payroll.basicSalary).toLocaleString()}</td>
+            </tr>
+
+            <tr className="border-b">
+              <td className="p-4">Allowance</td>
+              <td className="p-4 text-right">₦{Number(payroll.allowance).toLocaleString()}</td>
+            </tr>
+
+            <tr className="border-b">
+              <td className="p-4">Bonus</td>
+              <td className="p-4 text-right">₦{Number(payroll.bonus).toLocaleString()}</td>
+            </tr>
+
+            <tr className="border-b">
+              <td className="p-4 text-red-600">Deductions</td>
+              <td className="p-4 text-right text-red-600">- ₦{Number(payroll.deductions).toLocaleString()}</td>
+            </tr>
+
+            <tr className="bg-green-50">
+              <td className="p-5 font-bold">Net Salary</td>
+              <td className="p-5 text-right font-bold text-green-700">₦{Number(payroll.netSalary).toLocaleString()}</td>
+            </tr>
+          </tbody>
+        </table>
+      </Card>
+
+      <div className="max-w-5xl mx-auto mt-6 flex gap-4">
         <Button onClick={downloadPDF}>
-          Download PDF
+          <div className="flex items-center gap-2">
+            <Download size={18} />
+            Download PDF
+          </div>
         </Button>
 
-        <Button
-          onClick={() => window.print()}
-        >
-          Print Payslip
+        <Button onClick={() => window.print()}>
+          <div className="flex items-center gap-2">
+            <Printer size={18} />
+            Print
+          </div>
         </Button>
-
       </div>
-
     </AppLayout>
   );
 }
